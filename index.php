@@ -1,3 +1,6 @@
+<?php 
+    session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -21,9 +24,9 @@
             </header>
             <form action="" method="post">
                 <div class="field input mb-3">
-                    <label for="username" class="form-label">Usuário</label>
-                    <input type="text" name="username" id="username" class="form-control"
-                        placeholder="Insira seu nome de usário" autocomplete="off" required>
+                    <label for="email" class="form-label">E-mail</label>
+                    <input type="text" name="email" id="email" class="form-control" placeholder="Insira seu e-mail"
+                        autocomplete="off" required>
                 </div>
                 <div class="field input mb-3">
                     <label for="password" class="form-label">Senha</label>
@@ -38,6 +41,30 @@
                 <div class="links text-center">
                     Não possui uma conta? <a href="registro.php">Clique aqui</a>
                 </div>
+
+                <?php
+                    include('php/config.php');
+                    if(isset($_POST['submit'])){
+                        $email = mysqli_real_escape_string($connect, $_POST['email']);
+                        $password = mysqli_real_escape_string($connect, $_POST['password']);
+
+                        $result = mysqli_query($connect, "SELECT * FROM users WHERE Email = '$email' AND Password = '$password'") or die("Falha ao selecionar");
+                        $row = mysqli_fetch_array($result);
+
+                        if(is_array($row) && !empty($row)){
+                            $_SESSION['valid'] = $row['Email'];
+                            $_SESSION['username'] = $row['Username'];
+                            $_SESSION['idade'] = $row['Age'];
+                            $_SESSION['id'] = $row['Id'];
+                        } else {
+                            echo "<div class='alert alert-danger'>Email ou senha inválido</div>";
+                            echo "<a href='index.php' class='btn btn-primary w-100'>Tentar novamente</a>";
+                        }
+                        if(isset($_SESSION['valid'])){
+                            header('Location: home.php');
+                        }
+                    }
+                ?>
             </form>
         </div>
     </div>
