@@ -1,3 +1,11 @@
+<?php 
+    session_start();
+
+    include('php/config.php');
+    if(!isset($_SESSION['valid'])) {
+        header('Location: index.php');
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -34,23 +42,51 @@
             <form action="" method="post">
                 <div class="field input mb-3">
                     <label for="username" class="form-label">Usuário</label>
-                    <input type="text" name="username" id="username" class="form-control"
-                        placeholder="Insira seu novo nome de usário" autocomplete="off" required>
+                    <input type="text" name="username" value="<?php echo $res_Uname; ?>" id="username"
+                        class="form-control" placeholder="Insira seu novo nome de usário" autocomplete="off" required>
                 </div>
                 <div class="field input mb-3">
                     <label for="email" class="form-label">E-mail</label>
-                    <input type="text" name="email" id="email" class="form-control"
+                    <input type="text" name="email" value="<?php echo $res_Email; ?>" id="email" class="form-control"
                         placeholder="Insira seu novo nome de usário" autocomplete="off" required>
                 </div>
                 <div class="field input mb-3">
                     <label for="idade" class="form-label">Idade</label>
-                    <input type="number" name="idade" id="idade" class="form-control" placeholder="Insira sua idade"
-                        autocomplete="off" min="0" required>
+                    <input type="number" name="idade" value="<?php echo $res_Age; ?>" id="idade" class="form-control"
+                        placeholder="Insira sua idade" autocomplete="off" min="0" required>
                 </div>
 
                 <div class="field button mb-3">
                     <input type="submit" name="submit" value="Atualizar" class="btn btn-primary w-100" required>
                 </div>
+                <?php 
+                if(isset($_POST['submit'])){
+                    $username = $_POST['username'];
+                    $email = $_POST['email'];
+                    $idade = $_POST['idade'];
+                    
+                    $id = $_SESSION['id'];
+
+                    $edit_query = mysqli_query($connect, "UPDATE users SET Username = '$username', Email = '$email', Age = '$idade' WHERE Id = '$id'") or die("Falha ao atualizar");
+
+                    if($edit_query){
+                        echo "<div class='text-center alert alert-success'>Dados atualizados com sucesso</div>";
+                        echo "<a href='home.php' class='btn btn-primary w-100'>Voltar</a>";
+                    } else {
+                        
+                        $id = $_SESSION['id'];
+                        $query = mysqli_query($connect, "SELECT * FROM users WHERE Id = '$id'");
+
+                        while($result = mysqli_fetch_assoc($query)){
+                            $res_Uname = $result['Username'];
+                            $res_Email = $result['Email'];
+                            $res_Age = $result['Age'];
+                        }
+
+                        echo "<div class='alert alert-danger'>Falha ao atualizar</div>";
+                    }
+                }
+            ?>
             </form>
         </div>
     </div>

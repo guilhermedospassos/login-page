@@ -57,7 +57,7 @@
                             $_SESSION['idade'] = $row['Age'];
                             $_SESSION['id'] = $row['Id'];
                         } else {
-                            echo "<div class='alert alert-danger'>Email ou senha inválido</div>";
+                            echo "<div class='text-center mt-3 alert alert-danger'>Email ou senha inválido</div>";
                             echo "<a href='index.php' class='btn btn-primary w-100'>Tentar novamente</a>";
                         }
                         if(isset($_SESSION['valid'])){
