@@ -1,3 +1,11 @@
+<?php 
+    session_start();
+
+    include('php/config.php');
+    if(!isset($_SESSION['valid'])) {
+        header('Location: index.php');
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -18,7 +26,23 @@
         <div class="container-fluid">
             <h1 class="text-primary mx-2">Logo</h1>
             <div class="ms-auto d-flex align-items-center gap-2">
-                <a href="editar.php">Editar Perfil</a>
+
+                <?php 
+            
+            $id = $_SESSION['id'];
+            $query = mysqli_query($connect, "SELECT * FROM users WHERE Id = '$id'");
+
+            while($result = mysqli_fetch_assoc($query)){
+                $res_Uname = $result['Username'];
+                $res_Email = $result['Email'];
+                $res_Age = $result['Age'];
+                $res_id = $result['Id'];
+            }
+
+            echo "<a href='editar.php?Id=$res_id'>Editar Perfil</a>";
+
+            ?>
+
                 <a class="btn btn-primary mx-2" href="logout.php">Sair</a>
             </div>
         </div>
@@ -29,17 +53,17 @@
             <div class="col-md-8 col-lg-10">
                 <div class="card mb-3">
                     <div class="card-body text-center py-4 h-100 d-flex align-items-center justify-content-center">
-                        <p class="lead mb-0">Olá, <b>Nome do Usuário</b>, seja bem-vindo!</p>
+                        <p class="lead mb-0">Olá, <b><?= $res_Uname ?></b>, seja bem-vindo!</p>
                     </div>
                 </div>
                 <div class="card mb-3">
                     <div class="card-body text-center py-4 h-100 d-flex align-items-center justify-content-center">
-                        <p class="lead mb-0">Seu e-mail é: <b>E-mail do Usuário</b>.</p>
+                        <p class="lead mb-0">Seu e-mail é: <b><?= $res_Email ?></b>.</p>
                     </div>
                 </div>
                 <div class="card">
                     <div class="card-body text-center py-4 h-100 d-flex align-items-center justify-content-center">
-                        <p class="lead mb-0">E você tem <b>Idade</b> anos.</p>
+                        <p class="lead mb-0">E você tem <b><?= $res_Age ?></b> anos.</p>
                     </div>
                 </div>
             </div>
