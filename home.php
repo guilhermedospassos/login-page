@@ -53,7 +53,7 @@
             <div class="col-md-8 col-lg-10">
                 <div class="card mb-3">
                     <div class="card-body text-center py-4 h-100 d-flex align-items-center justify-content-center">
-                        <p class="lead mb-0">Olá, <b><?= $res_Uname ?></b>, seja bem-vindo!</p>
+                        <p class="lead mb-0">Olá, <b><?= $res_Uname ?></b>, seja bem-vindo(a)!</p>
                     </div>
                 </div>
                 <div class="card mb-3">
