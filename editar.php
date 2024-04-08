@@ -16,11 +16,11 @@
 <body class="d-flex flex-column min-vh-100">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-            <a class="text-decoration-none" href="home.html">
+            <a class="text-decoration-none" href="home.php">
                 <h1 class="text-primary mx-2">Logo</h1>
             </a>
             <div class="ms-auto d-flex align-items-center gap-2">
-                <a href="editar.html">Editar Perfil</a>
+                <a href="editar.php">Editar Perfil</a>
                 <a class="btn btn-primary mx-2" href="logout.php">Sair</a>
             </div>
         </div>

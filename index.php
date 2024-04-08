@@ -36,7 +36,7 @@
                     <input type="submit" name="submit" value="Login" class="btn btn-primary w-100" required>
                 </div>
                 <div class="links text-center">
-                    Não possui uma conta? <a href="registro.html">Clique aqui</a>
+                    Não possui uma conta? <a href="registro.php">Clique aqui</a>
                 </div>
             </form>
         </div>

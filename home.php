@@ -18,7 +18,7 @@
         <div class="container-fluid">
             <h1 class="text-primary mx-2">Logo</h1>
             <div class="ms-auto d-flex align-items-center gap-2">
-                <a href="editar.html">Editar Perfil</a>
+                <a href="editar.php">Editar Perfil</a>
                 <a class="btn btn-primary mx-2" href="logout.php">Sair</a>
             </div>
         </div>
