@@ -43,7 +43,7 @@
 
             ?>
 
-                <a class="btn btn-primary mx-2" href="logout.php">Sair</a>
+                <a class="btn btn-primary mx-2" href="php/logout.php">Sair</a>
             </div>
         </div>
     </nav>

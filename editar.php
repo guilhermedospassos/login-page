@@ -21,7 +21,7 @@
             </a>
             <div class="ms-auto d-flex align-items-center gap-2">
                 <a href="editar.php">Editar Perfil</a>
-                <a class="btn btn-primary mx-2" href="logout.php">Sair</a>
+                <a class="btn btn-primary mx-2" href="php/logout.php">Sair</a>
             </div>
         </div>
     </nav>
