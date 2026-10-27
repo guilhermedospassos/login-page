@@ -1,76 +1,16 @@
-<?php 
-    session_start();
-
-    include('php/config.php');
-    if(!isset($_SESSION['valid'])) {
-        header('Location: index.php');
-    }
+<?php
+require_once __DIR__ . '/php/config.php';
+$id = require_login();
+$stmt = $connect->prepare('SELECT Id, Username, Email, Age FROM users WHERE Id = ? LIMIT 1');
+$stmt->bind_param('i', $id); $stmt->execute();
+$user = $stmt->get_result()->fetch_assoc();
+if (!$user) { $_SESSION = []; session_destroy(); header('Location: index.php'); exit; }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
-
-<body class="d-flex flex-column min-vh-100">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <h1 class="text-primary mx-2">Logo</h1>
-            <div class="ms-auto d-flex align-items-center gap-2">
-
-                <?php 
-            
-            $id = $_SESSION['id'];
-            $query = mysqli_query($connect, "SELECT * FROM users WHERE Id = '$id'");
-
-            while($result = mysqli_fetch_assoc($query)){
-                $res_Uname = $result['Username'];
-                $res_Email = $result['Email'];
-                $res_Age = $result['Age'];
-                $res_id = $result['Id'];
-            }
-
-            echo "<a href='editar.php?Id=$res_id'>Editar Perfil</a>";
-
-            ?>
-
-                <a class="btn btn-primary mx-2" href="php/logout.php">Sair</a>
-            </div>
-        </div>
-    </nav>
-
-    <main class="container flex-grow-1 d-flex justify-content-center align-items-center">
-        <div class="row w-100 justify-content-center">
-            <div class="col-md-8 col-lg-10">
-                <div class="card mb-3">
-                    <div class="card-body text-center py-4 h-100 d-flex align-items-center justify-content-center">
-                        <p class="lead mb-0">Olá, <b><?= $res_Uname ?></b>, seja bem-vindo(a)!</p>
-                    </div>
-                </div>
-                <div class="card mb-3">
-                    <div class="card-body text-center py-4 h-100 d-flex align-items-center justify-content-center">
-                        <p class="lead mb-0">Seu e-mail é: <b><?= $res_Email ?></b>.</p>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-body text-center py-4 h-100 d-flex align-items-center justify-content-center">
-                        <p class="lead mb-0">E você tem <b><?= $res_Age ?></b> anos.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-</body>
-
-
-</html>
+<!DOCTYPE html><html lang="pt-br"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Minha conta</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"></head>
+<body class="bg-light"><nav class="navbar navbar-light bg-white border-bottom"><div class="container"><a href="home.php" class="navbar-brand">Minha conta</a>
+<form action="php/logout.php" method="post"><input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>"><button type="submit" class="btn btn-outline-secondary">Sair</button></form></div></nav>
+<main class="container py-5" style="max-width:680px"><div class="card p-4 shadow-sm"><h1 class="h3">Olá, <?= e($user['Username']) ?>!</h1>
+<p>Seu e-mail: <strong><?= e($user['Email']) ?></strong></p>
+<p>Sua idade: <strong><?= e($user['Age']) ?></strong></p>
+<a class="btn btn-primary" href="editar.php">Editar perfil</a></div></main></body></html>
