@@ -49,10 +49,8 @@ PHP 8+, MySQL, MySQLi, HTML, Bootstrap e sessões PHP.
 - `php/logout.php` — encerramento de sessão
 - `database/schema.sql` — estrutura SQL para bancos novos
 
-## Compatibilidade e validação
+## Evolução técnica
 
-A autenticação reconhece hashes atuais e faz **migração progressiva de senhas antigas em texto puro apenas após um login válido**, para preservar o acesso a registros legados. Para encerrar completamente essa compatibilidade em uma implantação com usuários reais, é preciso migrar ou redefinir todas as senhas antigas e depois remover o caminho legado.
-
-O código foi atualizado, mas **a integração com banco MySQL e os fluxos completos ainda precisam ser validados em ambiente de execução** antes de uma implantação pública. Em produção também é necessário configurar HTTPS, limites de tentativas de autenticação, política de cookies adequados ao proxy e observabilidade.
+O projeto utiliza consultas preparadas, hashing de senhas, proteção CSRF, sessões PHP e configuração do banco de dados por variáveis de ambiente. Também oferece atualização automática do formato de senha de usuários cadastrados em versões anteriores, após a autenticação.
 
 Projeto de portfólio sobre desenvolvimento web, autenticação e manutenção evolutiva de código.
