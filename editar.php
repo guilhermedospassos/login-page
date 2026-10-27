@@ -1,86 +1,35 @@
-<?php 
-    session_start();
-
-    include('php/config.php');
-    if(!isset($_SESSION['valid'])) {
-        header('Location: index.php');
+<?php
+require_once __DIR__ . '/php/config.php';
+$id = require_login(); $error = ''; $success = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verify_csrf();
+    $username = post_string('username'); $email = post_string('email'); $age = post_string('idade');
+    $error = profile_validation_error($username, $email, $age) ?? '';
+    if (!$error) {
+        try {
+            $ageInt = (int) $age;
+            $stmt = $connect->prepare('UPDATE users SET Username = ?, Email = ?, Age = ? WHERE Id = ?');
+            $stmt->bind_param('ssii', $username, $email, $ageInt, $id);
+            $stmt->execute();
+            $success = 'Dados atualizados com sucesso.';
+        } catch (mysqli_sql_exception $exception) {
+            error_log('Falha ao editar usuário: ' . $exception->getCode());
+            $error = $exception->getCode() === 1062 ? 'Este e-mail já está cadastrado.' : 'Não foi possível atualizar seus dados.';
+        }
     }
+}
+$stmt = $connect->prepare('SELECT Username, Email, Age FROM users WHERE Id = ? LIMIT 1');
+$stmt->bind_param('i', $id); $stmt->execute(); $user = $stmt->get_result()->fetch_assoc();
+if (!$user) { $_SESSION = []; session_destroy(); header('Location: index.php'); exit; }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mudar de conta</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
-
-<body class="d-flex flex-column min-vh-100">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="text-decoration-none" href="home.php">
-                <h1 class="text-primary mx-2">Logo</h1>
-            </a>
-            <div class="ms-auto d-flex align-items-center gap-2">
-                <a href="editar.php">Editar Perfil</a>
-                <a class="btn btn-primary mx-2" href="php/logout.php">Sair</a>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container flex-grow-1 d-flex justify-content-center align-items-center">
-        <div class="box form-box bg-light p-4 rounded shadow w-50 m-auto">
-            <header class="text-center mb-4">
-                <h4 class="display-4">Altere seus dados</h4>
-            </header>
-            <form action="" method="post">
-                <div class="field input mb-3">
-                    <label for="username" class="form-label">Usuário</label>
-                    <input type="text" name="username" id="username" class="form-control"
-                        placeholder="Insira seu novo nome de usário" autocomplete="off" required>
-                </div>
-                <div class="field input mb-3">
-                    <label for="email" class="form-label">E-mail</label>
-                    <input type="text" name="email" id="email" class="form-control"
-                        placeholder="Insira seu novo nome de usário" autocomplete="off" required>
-                </div>
-                <div class="field input mb-3">
-                    <label for="idade" class="form-label">Idade</label>
-                    <input type="number" name="idade" id="idade" class="form-control" placeholder="Insira sua idade"
-                        autocomplete="off" min="0" required>
-                </div>
-
-                <div class="field button mb-3">
-                    <input type="submit" name="submit" value="Atualizar" class="btn btn-primary w-100" required>
-                </div>
-                <?php 
-                if(isset($_POST['submit'])){
-                    $username = $_POST['username'];
-                    $email = $_POST['email'];
-                    $idade = $_POST['idade'];
-                    
-                    $id = $_SESSION['id'];
-
-                    $edit_query = mysqli_query($connect, "UPDATE users SET Username = '$username', Email = '$email', Age = '$idade' WHERE Id = '$id'") or die("Falha ao atualizar");
-
-                    if($edit_query){
-                        echo "<div class='text-center alert alert-success'>Dados atualizados com sucesso</div>";
-                        echo "<a href='home.php' class='btn btn-primary w-100'>Voltar</a>";
-                    } else {
-                        echo "<div class='alert alert-danger'>Falha ao atualizar</div>";
-                    }
-                }
-            ?>
-            </form>
-        </div>
-    </div>
-</body>
-
-
-</html>
+<!DOCTYPE html><html lang="pt-br"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Editar perfil</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"></head>
+<body class="d-flex justify-content-center align-items-center min-vh-100 bg-light"><main class="container" style="max-width:500px"><div class="card p-4 shadow-sm">
+<h1 class="h3 text-center mb-4">Editar perfil</h1>
+<?php if ($error): ?><div class="alert alert-danger" role="alert"><?= e($error) ?></div><?php endif; ?>
+<?php if ($success): ?><div class="alert alert-success" role="status"><?= e($success) ?></div><?php endif; ?>
+<form method="post"><input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+<div class="mb-3"><label for="username" class="form-label">Usuário</label><input class="form-control" id="username" name="username" maxlength="80" required value="<?= e($user['Username']) ?>"></div>
+<div class="mb-3"><label for="email" class="form-label">E-mail</label><input class="form-control" id="email" name="email" type="email" maxlength="254" required value="<?= e($user['Email']) ?>"></div>
+<div class="mb-3"><label for="idade" class="form-label">Idade</label><input class="form-control" id="idade" name="idade" type="number" min="0" max="120" required value="<?= e($user['Age']) ?>"></div>
+<button type="submit" class="btn btn-primary w-100">Salvar alterações</button></form><a href="home.php" class="btn btn-link mt-2">Voltar</a></div></main></body></html>
