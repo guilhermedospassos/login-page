@@ -1,40 +1,58 @@
-# Login Page — estudo de autenticação com PHP
+# Login Page — PHP & MySQL
 
-Projeto de estudo de **login, cadastro e gerenciamento de informações do usuário**, construído com PHP e interfaces HTML/CSS, utilizando Bootstrap e MySQL.
+Aplicação de autenticação e gerenciamento de perfil em PHP, com cadastro, login, área autenticada e edição de dados. A versão atual moderniza as consultas, sessões e manipulação de senhas, preservando a finalidade original do projeto.
 
-## O que há no repositório
+## Funcionalidades
 
-- `index.php` — formulário de login
-- `registro.php` — cadastro de usuário
-- `home.php` — página acessada após autenticação
-- `editar.php` — edição de informações
-- `php/config.php` — conexão com o banco de dados
-- `php/logout.php` — encerramento da sessão
-- `style/` — arquivos de estilo
+- Cadastro com validação de nome, e-mail, idade e senha
+- Login com verificação de senha por hash e atualização gradual de senhas legadas após autenticação
+- Sessões com renovação de identificador ao entrar, cookies HttpOnly e SameSite
+- Consultas SQL preparadas com MySQLi
+- Proteção CSRF nos formulários e no logout
+- Escapamento de dados apresentados nas páginas
+- Edição de perfil limitada ao usuário autenticado
+- Configuração de acesso ao banco por variáveis de ambiente
 
 ## Tecnologias
 
-PHP, MySQL, HTML, CSS, Bootstrap e sessões PHP.
+PHP 8+, MySQL, MySQLi, HTML, Bootstrap e sessões PHP.
 
-## Execução local
-
-Este projeto **requer um ambiente com PHP e MySQL**; não é uma página estática que funciona apenas abrindo `index.php` no navegador.
+## Preparação
 
 1. Clone o repositório:
+
    ```bash
    git clone https://github.com/guilhermedospassos/login-page.git
+   cd login-page
    ```
-2. Configure um servidor PHP local e um banco MySQL de teste.
-3. Inspecione `php/config.php` e configure a conexão para o seu ambiente **sem publicar credenciais reais**.
-4. Verifique as tabelas e colunas exigidas pelas consultas no código. O repositório não disponibiliza uma migração de banco de dados automatizada.
-5. Execute o projeto pelo servidor PHP, com o banco configurado.
 
-## Aviso de segurança
+2. Crie um banco MySQL e aplique `database/schema.sql` para instalações novas. Para bases antigas, confira o tamanho da coluna `Password`, que precisa comportar hashes de até 255 caracteres. Faça backup antes de qualquer alteração de esquema.
 
-**Este é um exercício acadêmico/educacional, não uma solução de autenticação pronta para produção.** A implementação original compara senhas diretamente nas consultas ao banco e não demonstra proteção adequada por hash de senha e consultas parametrizadas em todos os fluxos. Antes de qualquer uso real, é necessário revisar a aplicação, incluindo `password_hash()`, `password_verify()`, prepared statements, validação de entradas, sessões e tratamento de erros.
+3. Configure **no ambiente do processo PHP**, e não no código-fonte, as variáveis `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER` e `DB_PASSWORD`. Consulte `.env.example` apenas como referência de nomes; este projeto **não carrega arquivos .env automaticamente**.
 
-Nunca reutilize credenciais reais nem exponha este projeto com dados de usuários.
+4. Configure um servidor PHP com extensão `mysqli` e acesso ao MySQL. Para testes locais, na pasta do projeto:
 
-## Status
+   ```bash
+   php -S 127.0.0.1:8000
+   ```
 
-Projeto de aprendizagem mantido para documentar minha evolução em desenvolvimento web e PHP.
+5. Abra `http://127.0.0.1:8000` e teste o ciclo de cadastro, login, edição e logout.
+
+## Arquivos principais
+
+- `index.php` — autenticação
+- `registro.php` — registro de usuários
+- `home.php` — área de usuário
+- `editar.php` — edição de perfil
+- `php/bootstrap.php` — inicialização da sessão e funções comuns
+- `php/config.php` — conexão ao MySQL por variáveis de ambiente
+- `php/logout.php` — encerramento de sessão
+- `database/schema.sql` — estrutura SQL para bancos novos
+
+## Compatibilidade e validação
+
+A autenticação reconhece hashes atuais e faz **migração progressiva de senhas antigas em texto puro apenas após um login válido**, para preservar o acesso a registros legados. Para encerrar completamente essa compatibilidade em uma implantação com usuários reais, é preciso migrar ou redefinir todas as senhas antigas e depois remover o caminho legado.
+
+O código foi atualizado, mas **a integração com banco MySQL e os fluxos completos ainda precisam ser validados em ambiente de execução** antes de uma implantação pública. Em produção também é necessário configurar HTTPS, limites de tentativas de autenticação, política de cookies adequados ao proxy e observabilidade.
+
+Projeto de portfólio sobre desenvolvimento web, autenticação e manutenção evolutiva de código.
